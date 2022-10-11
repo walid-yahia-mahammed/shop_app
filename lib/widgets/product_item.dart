@@ -33,7 +33,7 @@ class ProductItem extends StatelessWidget {
               onPressed: product.togleFavoriteStatus,
               icon: Icon(
                 product.isFavorite ? Icons.favorite : Icons.favorite_outline,
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
           ),
@@ -51,7 +51,7 @@ class ProductItem extends StatelessWidget {
             },
             icon: Icon(
               Icons.shopping_cart,
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ),
         ),

@@ -31,8 +31,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'MyShop',
         theme: ThemeData(
-            primarySwatch: Colors.purple,
-            accentColor: Colors.deepOrange,
+            colorScheme: ThemeData().colorScheme.copyWith(
+                  primary: Colors.purple,
+                  secondary: Colors.deepOrangeAccent,
+                ),
             fontFamily: 'Lato'),
         home: ProductsOverviewScreen(),
         routes: {
@@ -50,9 +52,9 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('MyShop'),
+        title: const Text('MyShop'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Let\'s build a shop!'),
       ),
     );
