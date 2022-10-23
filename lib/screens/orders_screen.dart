@@ -1,7 +1,11 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+//providers
 import '../providers/orders.dart';
+
+//widgets
 import '../widgets/app_drawer.dart';
 import '../widgets/order_item.dart' as wgt;
 

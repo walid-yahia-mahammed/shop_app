@@ -1,5 +1,8 @@
+//packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+//providers
 import '../providers/cart.dart' show Cart;
 
 class CartItem extends StatelessWidget {
@@ -16,7 +19,6 @@ class CartItem extends StatelessWidget {
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).deleteItem(productId);
-        print("object");
       },
       key: ValueKey(id),
       background: Container(

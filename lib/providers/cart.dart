@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class CartItem {
   final String id;
@@ -33,6 +33,18 @@ class Cart with ChangeNotifier {
 
   void deleteItem(productId) {
     _items.remove(productId);
+    notifyListeners();
+  }
+
+  void removeSingleItem(String productId) {
+    if (!_items.containsKey(productId)) {
+      return;
+    }
+    if (_items[productId]!.qty > 1) {
+      _items[productId]!.qty = _items[productId]!.qty - 1;
+    } else {
+      _items.remove(productId);
+    }
     notifyListeners();
   }
 
