@@ -3,13 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/providers/product.dart';
 import 'package:shop_app/providers/products_provider.dart';
 
-class EditProductScreen extends StatefulWidget {
+class AddProductScreen extends StatefulWidget {
   static const routeName = '/editProduct';
   @override
-  State<EditProductScreen> createState() => _EditProductScreenState();
+  State<AddProductScreen> createState() => _AddProductScreenState();
 }
 
-class _EditProductScreenState extends State<EditProductScreen> {
+class _AddProductScreenState extends State<AddProductScreen> {
   final _priceFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
   final _imageUrlController = TextEditingController();
@@ -42,11 +42,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
-    final valid = _form.currentState!.validate();   
+    final valid = _form.currentState!.validate();
     if (valid) {
       _form.currentState!.save();
       Provider.of<ProductsProvider>(context, listen: false)
           .addProduct(_editedProduct);
+      Navigator.of(context).pop();
     }
   }
 
