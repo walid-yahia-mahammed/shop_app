@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/providers/product.dart';
-import 'package:shop_app/providers/products_provider.dart';
+
+
+import '../providers/product.dart';
+import '../providers/products_provider.dart';
 
 class AddProductScreen extends StatefulWidget {
-  static const routeName = '/editProduct';
+  static const routeName = '/addProduct';
   @override
   State<AddProductScreen> createState() => _AddProductScreenState();
 }

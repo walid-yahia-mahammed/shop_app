@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/providers/product.dart';
-import 'package:shop_app/providers/products_provider.dart';
+
+
+import '../providers/product.dart';
+import '../providers/products_provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/editProduct';
@@ -22,12 +24,29 @@ class _EditProductScreenState extends State<EditProductScreen> {
     'price': 0,
     'imageUrl': ''
   };
-
+  var _isInit = true;
   @override
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
     // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context)!.settings.arguments as String;
+      final product =
+          Provider.of<ProductsProvider>(context).findById(productId);
+      _editedProduct['id'] = product.id;
+      _editedProduct['title'] = product.title;
+      _editedProduct['description'] = product.description;
+      _editedProduct['price'] = product.price.toString();
+      _editedProduct['imageUrl'] = '';
+      _imageUrlController.text = product.imageUrl;
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
@@ -42,11 +61,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
-    final valid = _form.currentState!.validate();   
+    final valid = _form.currentState!.validate();
     if (valid) {
       _form.currentState!.save();
-      Provider.of<ProductsProvider>(context, listen: false)
-          .addProduct(_editedProduct);
+      Provider.of<ProductsProvider>(context, listen: false).updateProduct(
+          ModalRoute.of(context)!.settings.arguments as String, _editedProduct);
+      Navigator.of(context).pop();
     }
   }
 
@@ -75,6 +95,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _editedProduct['title'] as String,
                 decoration: InputDecoration(labelText: 'Title'),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
@@ -91,6 +112,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: "${_editedProduct['price']}",
                 decoration: InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -115,6 +137,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _editedProduct['description'] as String,
                 decoration: InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 focusNode: _descriptionFocusNode,
