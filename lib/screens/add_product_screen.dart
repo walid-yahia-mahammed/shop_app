@@ -52,7 +52,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
       _form.currentState!.save();
       Provider.of<ProductsProvider>(context, listen: false)
           .addProduct(_editedProduct)
-          .then(
+          .catchError((error) {
+        return showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('error'),
+            content: Text('Something went wrong'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _isloading = false;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('close'))
+            ],
+          ),
+        );
+      }).then(
         (_) {
           setState(() {
             _isloading = false;
