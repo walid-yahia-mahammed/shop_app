@@ -48,4 +48,4 @@ app.*.map.json
 linux/flutter/
 macos/Flutter
 windows/flutter/
-./pubspec.lock
+pubspec.lock
