@@ -43,17 +43,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
     super.dispose();
   }
 
-  void _saveForm() {
+  void _saveForm() async {
     setState(() {
       _isloading = true;
     });
     final valid = _form.currentState!.validate();
     if (valid) {
-      _form.currentState!.save();
-      Provider.of<ProductsProvider>(context, listen: false)
-          .addProduct(_editedProduct)
-          .catchError((error) {
-        return showDialog(
+      try {
+        _form.currentState!.save();
+        await Provider.of<ProductsProvider>(context, listen: false)
+            .addProduct(_editedProduct);
+      } catch (error) {
+        await showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: Text('error'),
@@ -61,23 +62,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
             actions: [
               TextButton(
                   onPressed: () {
-                    setState(() {
-                      _isloading = false;
-                    });
                     Navigator.of(context).pop();
                   },
                   child: Text('close'))
             ],
           ),
         );
-      }).then(
-        (_) {
-          setState(() {
-            _isloading = false;
-          });
-          Navigator.of(context).pop();
-        },
-      );
+      } finally {
+        setState(() {
+          _isloading = false;
+        });
+        Navigator.of(context).pop();
+      }
     }
   }
 
