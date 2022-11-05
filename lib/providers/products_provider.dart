@@ -1,5 +1,7 @@
+import 'dart:convert';
 //packages
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 //providers
 import './product.dart';
@@ -41,6 +43,7 @@ class ProductsProvider with ChangeNotifier {
   ];
 
   var showFavoriteOnly = false;
+
   List<Product> get items {
     return [..._items];
   }
@@ -53,16 +56,31 @@ class ProductsProvider with ChangeNotifier {
     return _items.firstWhere((item) => item.id == id);
   }
 
-  void addProduct(productData) {
-    final newProduct = Product(
-      id: DateTime.now().toString(),
-      title: productData['title'],
-      description: productData['description'],
-      price: productData['price'],
-      imageUrl: productData['imageUrl'],
-    );
-    _items.add(newProduct);
-    notifyListeners();
+  Future addProduct(productData) {
+    const url =
+        'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products.json';
+    return http
+        .post(
+      Uri.parse(url),
+      body: json.encode({
+        'title': productData['title'],
+        'description': productData['description'],
+        'price': productData['price'],
+        'imageUrl': productData['imageUrl'],
+        'isFavorite': false,
+      }),
+    )
+        .then((response) {
+      final newProduct = Product(
+        id: json.decode(response.body)['name'],
+        title: productData['title'],
+        description: productData['description'],
+        price: productData['price'],
+        imageUrl: productData['imageUrl'],
+      );
+      _items.add(newProduct);
+      notifyListeners();
+    });
   }
 
   void updateProduct(String productid, productData) {
