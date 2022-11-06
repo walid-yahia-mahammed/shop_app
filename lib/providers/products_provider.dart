@@ -79,21 +79,47 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  void updateProduct(String productid, productData) {
+  Future updateProduct(String productid, productData) async {
     int index = _items.indexWhere((element) => element.id == productid);
-    _items[index] = Product(
-      id: DateTime.now().toString(),
-      title: productData['title'],
-      description: productData['description'],
-      price: productData['price'].toDouble(),
-      imageUrl: productData['imageUrl'],
-      isFavorite: _items[index].isFavorite,
-    );
-    notifyListeners();
+    if (index >= 0) {
+      final url =
+          'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products/$productid.json';
+      try {
+        await http.patch(
+          Uri.parse(url),
+          body: json.encode({
+            'title': productData['title'],
+            'description': productData['description'],
+            'price': productData['price'],
+            'imageUrl': productData['imageUrl'],
+          }),
+        );
+        _items[index] = Product(
+          id: _items[index].id,
+          title: productData['title'],
+          description: productData['description'],
+          price: productData['price'].toDouble(),
+          imageUrl: productData['imageUrl'],
+          isFavorite: _items[index].isFavorite,
+        );
+        notifyListeners();
+      } catch (error) {
+        print(error);
+        throw error;
+      }
+    }
   }
 
-  void removeProduct(String productid) {
-    _items.removeAt(_items.indexWhere((element) => element.id == productid));
-    notifyListeners();
+  void removeProduct(String productid) async {
+    final url =
+        'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products/$productid.json';
+    try {
+      await http.delete(Uri.parse(url));
+      _items.removeAt(_items.indexWhere((element) => element.id == productid));
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
 }
