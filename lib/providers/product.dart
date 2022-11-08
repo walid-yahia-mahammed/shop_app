@@ -1,5 +1,6 @@
+import 'dart:convert';
 
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class Product with ChangeNotifier {
@@ -22,5 +23,19 @@ class Product with ChangeNotifier {
   void togleFavoriteStatus() {
     isFavorite = !isFavorite;
     notifyListeners();
+    final url =
+        'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json';
+    try {
+      http.patch(
+        Uri.parse(url),
+        body: json.encode({
+          'isFavorite': isFavorite,
+        }),
+      );
+    } catch (error) {
+      isFavorite = !isFavorite;
+      notifyListeners();
+      throw error;
+    }
   }
 }
