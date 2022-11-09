@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 //providers
 import './cart.dart';
+import '../secret/config.dart';
 
 class OrderItem {
   final String id;
@@ -28,8 +29,7 @@ class Orders with ChangeNotifier {
   }
 
   Future fetchAndSetOrderss() async {
-    const url =
-        'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products.json';
+    const url = '${Config.base_url}/products.json';
     try {
       final response = await http.get(Uri.parse(url));
       final extractedOrderItems =
@@ -53,8 +53,7 @@ class Orders with ChangeNotifier {
   }
 
   Future addOrder(List<CartItem> cartProducts, double total) async {
-    const url =
-        'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/orders.json';
+    const url = '${Config.base_url}/orders.json';
     try {
       final timestamp = DateTime.now();
       final response = await http.post(

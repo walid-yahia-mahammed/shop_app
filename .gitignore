@@ -49,3 +49,4 @@ linux/flutter/
 macos/Flutter
 windows/flutter/
 pubspec.lock
+config.dart

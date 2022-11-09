@@ -6,6 +6,7 @@ import '../models/http_exception.dart';
 
 //providers
 import './product.dart';
+import '../secret/config.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [];
@@ -25,8 +26,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future fetchAndSetProducts() async {
-    const url =
-        'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products.json';
+    const url = '${Config.base_url}/products.json';
     try {
       final response = await http.get(Uri.parse(url));
       final extractedProducts =
@@ -52,8 +52,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future addProduct(productData) async {
-    const url =
-        'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products.json';
+    const url = '${Config.base_url}/products.json';
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -83,8 +82,7 @@ class ProductsProvider with ChangeNotifier {
   Future updateProduct(String productid, productData) async {
     int index = _items.indexWhere((element) => element.id == productid);
     if (index >= 0) {
-      final url =
-          'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products/$productid.json';
+      final url = '${Config.base_url}/products/$productid.json';
       try {
         await http.patch(
           Uri.parse(url),
@@ -112,8 +110,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> removeProduct(String productid) async {
-    final url =
-        'https://flutterproject-75f32-default-rtdb.europe-west1.firebasedatabase.app/products/$productid.json';
+    final url = '${Config.base_url}/products/$productid.json';
     final index = _items.indexWhere((element) => element.id == productid);
     Product? deletedProduct = _items[index];
     _items.removeAt(index);
