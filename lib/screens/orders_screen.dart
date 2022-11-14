@@ -19,6 +19,7 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen> {
   bool _isInit = true;
   bool _isLoading = false;
+
   @override
   void didChangeDependencies() {
     if (_isInit) {
