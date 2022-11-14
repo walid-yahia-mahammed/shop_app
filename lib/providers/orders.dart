@@ -28,26 +28,35 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  Future fetchAndSetOrderss() async {
-    const url = '${Config.base_url}/products.json';
+  Future fetchAndSetOrders() async {
+    const url = '${Config.base_url}/orders.json';
     try {
       final response = await http.get(Uri.parse(url));
       final extractedOrderItems =
           json.decode(response.body) as Map<String, dynamic>;
+      List<CartItem> Productslist = [];
       List<OrderItem> loadedOrderItems = [];
       extractedOrderItems.forEach((id, values) {
+        values['products'].forEach((product) {
+          Productslist.add(CartItem(
+              id: product['id'],
+              title: product['title'],
+              qty: product['quantity'],
+              price: product['price']));
+        });
         loadedOrderItems.add(
           OrderItem(
             id: id,
             amount: values['amount'],
-            products: values['products'],
-            dateTime: values['dateTime'],
+            products: Productslist,
+            dateTime: DateTime.parse(values['dateTime']),
           ),
         );
       });
       _orders = loadedOrderItems;
       notifyListeners();
     } catch (error) {
+      print(error);
       throw error;
     }
   }
