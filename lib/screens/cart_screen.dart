@@ -109,7 +109,7 @@ class _CheckoutState extends State<Checkout> {
                   .then((value) {
                 widget.cart.clear();
                 setState(() {
-                  _isLoading = true;
+                  _isLoading = false;
                 });
               });
             },

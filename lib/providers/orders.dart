@@ -34,21 +34,20 @@ class Orders with ChangeNotifier {
       final response = await http.get(Uri.parse(url));
       final extractedOrderItems =
           json.decode(response.body) as Map<String, dynamic>;
-      List<CartItem> Productslist = [];
       List<OrderItem> loadedOrderItems = [];
       extractedOrderItems.forEach((id, values) {
-        values['products'].forEach((product) {
-          Productslist.add(CartItem(
-              id: product['id'],
-              title: product['title'],
-              qty: product['quantity'],
-              price: product['price']));
-        });
         loadedOrderItems.add(
           OrderItem(
             id: id,
             amount: values['amount'],
-            products: Productslist,
+            products: (values['products'] as List<dynamic>)
+                .map((product) => CartItem(
+                      id: product['id'],
+                      title: product['title'],
+                      qty: product['quantity'],
+                      price: product['price'],
+                    ))
+                .toList(),
             dateTime: DateTime.parse(values['dateTime']),
           ),
         );
