@@ -32,26 +32,27 @@ class Orders with ChangeNotifier {
     const url = '${Config.base_url}/orders.json';
     try {
       final response = await http.get(Uri.parse(url));
-      final extractedOrderItems =
-          json.decode(response.body) as Map<String, dynamic>;
+      final extractedOrderItems = json.decode(response.body) ?? {};
       List<OrderItem> loadedOrderItems = [];
-      extractedOrderItems.forEach((id, values) {
-        loadedOrderItems.add(
-          OrderItem(
-            id: id,
-            amount: values['amount'],
-            products: (values['products'] as List<dynamic>)
-                .map((product) => CartItem(
-                      id: product['id'],
-                      title: product['title'],
-                      qty: product['quantity'],
-                      price: product['price'],
-                    ))
-                .toList(),
-            dateTime: DateTime.parse(values['dateTime']),
-          ),
-        );
-      });
+      if (extractedOrderItems.isNotEmpty) {
+        extractedOrderItems.forEach((id, values) {
+          loadedOrderItems.add(
+            OrderItem(
+              id: id,
+              amount: values['amount'],
+              products: (values['products'] as List<dynamic>)
+                  .map((product) => CartItem(
+                        id: product['id'],
+                        title: product['title'],
+                        qty: product['quantity'],
+                        price: product['price'],
+                      ))
+                  .toList(),
+              dateTime: DateTime.parse(values['dateTime']),
+            ),
+          );
+        });
+      }
       _orders = loadedOrderItems;
       notifyListeners();
     } catch (error) {

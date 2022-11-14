@@ -29,21 +29,22 @@ class ProductsProvider with ChangeNotifier {
     const url = '${Config.base_url}/products.json';
     try {
       final response = await http.get(Uri.parse(url));
-      final extractedProducts =
-          json.decode(response.body) as Map<String, dynamic>;
+      final extractedProducts = json.decode(response.body) ?? {};
       List<Product> loadedProducts = [];
-      extractedProducts.forEach((id, values) {
-        loadedProducts.add(
-          Product(
-            id: id,
-            title: values['title'],
-            description: values['description'],
-            price: values['price'],
-            imageUrl: values['imageUrl'],
-            isFavorite: values['isFavorite'],
-          ),
-        );
-      });
+      if (extractedProducts.isNotEmpty) {
+        extractedProducts.forEach((id, values) {
+          loadedProducts.add(
+            Product(
+              id: id,
+              title: values['title'],
+              description: values['description'],
+              price: values['price'],
+              imageUrl: values['imageUrl'],
+              isFavorite: values['isFavorite'],
+            ),
+          );
+        });
+      }
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {
