@@ -9,58 +9,48 @@ import '../providers/orders.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/order_item.dart' as wgt;
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends StatelessWidget {
   static String routeName = '/orders';
-
-  @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
-}
-
-class _OrdersScreenState extends State<OrdersScreen> {
-  bool _isInit = true;
   bool _isLoading = false;
 
   @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isLoading = true;
-      });
-      Provider.of<Orders>(context).fetchAndSetOrders().then(
-        (_) {
-          setState(() {
-            _isLoading = false;
-          });
-        },
-      );
-    }
-    _isInit = false;
-    super.didChangeDependencies();
-  }
-
-  Future<void> _refreshOrders(BuildContext context) async {
-    await Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final ordersData = Provider.of<Orders>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('your Orders'),
       ),
       drawer: AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => _refreshOrders(context),
-        child: _isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : ListView.builder(
+      body: FutureBuilder(
+        future: Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.error == null) {
+            return Consumer<Orders>(
+              builder: (context, ordersData, child) => ListView.builder(
                 itemCount: ordersData.orders.length,
                 itemBuilder: (ctx, index) =>
                     wgt.OrderItem(ordersData.orders[index]),
               ),
+            );
+          }
+          print(snapshot.error);
+          return AlertDialog(
+            title: Text('error'),
+            content: Text('Something went wrong'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed('/');
+                  },
+                  child: Text('close'))
+            ],
+          );
+        },
       ),
     );
   }
