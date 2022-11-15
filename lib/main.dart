@@ -38,25 +38,27 @@ class MyApp extends StatelessWidget {
           create: (ctx) => Orders(),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'MyShop',
-        theme: ThemeData(
-            colorScheme: ThemeData().colorScheme.copyWith(
-                  primary: Colors.purple,
-                  secondary: Colors.deepOrangeAccent,
-                ),
-            fontFamily: 'Lato'),
-        home: AuthScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-          CartScreen.routeName: (ctx) => CartScreen(),
-          OrdersScreen.routeName: (ctx) => OrdersScreen(),
-          UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
-          AddProductScreen.routeName: (ctx) => AddProductScreen(),
-          EditProductScreen.routeName: (ctx) => EditProductScreen(),
-        },
-      ),
+      child: Consumer<Auth>(builder: (ctx, auth, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'MyShop',
+          theme: ThemeData(
+              colorScheme: ThemeData().colorScheme.copyWith(
+                    primary: Colors.purple,
+                    secondary: Colors.deepOrangeAccent,
+                  ),
+              fontFamily: 'Lato'),
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: {
+            ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+            CartScreen.routeName: (ctx) => CartScreen(),
+            OrdersScreen.routeName: (ctx) => OrdersScreen(),
+            UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
+            AddProductScreen.routeName: (ctx) => AddProductScreen(),
+            EditProductScreen.routeName: (ctx) => EditProductScreen(),
+          },
+        );
+      }),
     );
   }
 }

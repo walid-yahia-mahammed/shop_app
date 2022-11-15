@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/models/http_exception.dart';
 import 'package:shop_app/providers/auth.dart';
 
 enum AuthMode { Signup, Login }
@@ -105,6 +106,20 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(ctx).pop(), child: Text('Okey'))
+        ],
+      ),
+    );
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid!
@@ -114,12 +129,54 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      await Provider.of<Auth>(context, listen: false)
-          .singin(_authData['email'] as String, _authData['email'] as String);
-    } else {
-      await Provider.of<Auth>(context, listen: false)
-          .singup(_authData['email'] as String, _authData['email'] as String);
+    try {
+      if (_authMode == AuthMode.Login) {
+        await Provider.of<Auth>(context, listen: false)
+            .singin(_authData['email'] as String, _authData['password'] as String);
+      } else {
+        await Provider.of<Auth>(context, listen: false)
+            .singup(_authData['email'] as String, _authData['password'] as String);
+      }
+    } on HttpException catch (error) {
+      print(error.toString());
+      var errorMessage = 'something went wrong!';
+      switch (error.toString()) {
+        case 'EMAIL_NOT_FOUND':
+          errorMessage = 'There is no user record to this identifier';
+          break;
+        case 'INVALID_PASSWORD':
+          errorMessage = 'The password is invalid';
+          break;
+        case 'USER_DISABLED':
+          errorMessage = 'The user account has been disabled';
+          break;
+        case 'EMAIL_EXISTS':
+          errorMessage = 'The email address is already in use';
+          break;
+        case 'OPERATION_NOT_ALLOWED':
+          errorMessage = 'sign-in is disabled for this project';
+          break;
+        case 'TOO_MANY_ATTEMPTS_TRY_LATER':
+          errorMessage =
+              ' We have blocked all requests from this device. Try again later.';
+          break;
+        case 'INVALID_EMAIL':
+          errorMessage = 'please inter a valid email';
+          break;
+        case 'INVALID_PASSWORD':
+          errorMessage = 'wrong password';
+          break;
+        case 'WEAK_PASSWORD':
+          errorMessage = 'please inter stronger password.';
+          break;
+        default:
+          errorMessage = 'something went wrong!';
+          break;
+      }
+      _showErrorDialog(errorMessage);
+    } catch (error) {
+      var errorMessage = 'something went wrong!';
+      _showErrorDialog(errorMessage);
     }
     setState(() {
       _isLoading = false;
