@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/auth.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -103,7 +105,7 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
@@ -113,9 +115,10 @@ class _AuthCardState extends State<AuthCard> {
       _isLoading = true;
     });
     if (_authMode == AuthMode.Login) {
-      // Log user in
+      // login user up
     } else {
-      // Sign user up
+      await Provider.of<Auth>(context, listen: false)
+          .singup(_authData['email'] as String, _authData['email'] as String);
     }
     setState(() {
       _isLoading = false;
@@ -160,7 +163,6 @@ class _AuthCardState extends State<AuthCard> {
                     if (value!.isEmpty || !value.contains('@')) {
                       return 'Invalid email!';
                     }
-                    return null;
                     return null;
                   },
                   onSaved: (value) {
@@ -212,7 +214,7 @@ class _AuthCardState extends State<AuthCard> {
                       _authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP',
                       style: TextStyle(
                         color: Theme.of(context).primaryTextTheme.button!.color,
-                       ),
+                      ),
                     ),
                     onPressed: _submit,
                   ),
