@@ -23,4 +23,18 @@ class Auth with ChangeNotifier {
 
     print(json.decode(response.body));
   }
+
+  Future<void> singin(String email, String password) async {
+    const url = Config.singin_url;
+    final response = await http.post(
+      Uri.parse(url),
+      body: json.encode({
+        'email': email,
+        'password': password,
+        'returnSecureToken': true,
+      }),
+    );
+
+    print(json.decode(response.body));
+  }
 }

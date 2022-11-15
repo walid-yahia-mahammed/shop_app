@@ -115,7 +115,8 @@ class _AuthCardState extends State<AuthCard> {
       _isLoading = true;
     });
     if (_authMode == AuthMode.Login) {
-      // login user up
+      await Provider.of<Auth>(context, listen: false)
+          .singin(_authData['email'] as String, _authData['email'] as String);
     } else {
       await Provider.of<Auth>(context, listen: false)
           .singup(_authData['email'] as String, _authData['email'] as String);
