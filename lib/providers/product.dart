@@ -22,16 +22,15 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void togleFavoriteStatus() {
+  void togleFavoriteStatus(String authToken, String userId) {
     isFavorite = !isFavorite;
     notifyListeners();
-    final url = '${Config.base_url}/products/$id.json';
+    final url =
+        '${Config.base_url}/userFavorite/$userId/$id.json?auth=$authToken';
     try {
-      http.patch(
+      http.put(
         Uri.parse(url),
-        body: json.encode({
-          'isFavorite': isFavorite,
-        }),
+        body: json.encode(isFavorite,),
       );
     } catch (error) {
       isFavorite = !isFavorite;

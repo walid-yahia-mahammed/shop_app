@@ -21,6 +21,9 @@ class Auth with ChangeNotifier {
     }
     return '';
   }
+  String get userId {
+      return _userId as String;
+  }
 
   Future _authenticate(String email, String password, String url) async {
     try {

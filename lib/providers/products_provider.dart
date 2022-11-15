@@ -10,9 +10,11 @@ import '../secret/config.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [];
-
+  String authToken;
+  String userId;
   var showFavoriteOnly = false;
 
+  ProductsProvider(this.authToken, this.userId, _items);
   List<Product> get items {
     return [..._items];
   }
@@ -26,12 +28,15 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future fetchAndSetProducts() async {
-    const url = '${Config.base_url}/products.json';
+    var url = '${Config.base_url}/products.json?auth=$authToken';
     try {
       final response = await http.get(Uri.parse(url));
       final extractedProducts = json.decode(response.body) ?? {};
       List<Product> loadedProducts = [];
       if (extractedProducts.isNotEmpty) {
+        url = '${Config.base_url}/userFavorite/$userId.json?auth=$authToken';
+        final favoritesResponse = await http.get(Uri.parse(url));
+        final favoriteData = json.decode(favoritesResponse.body) ?? {};
         extractedProducts.forEach((id, values) {
           loadedProducts.add(
             Product(
@@ -40,7 +45,7 @@ class ProductsProvider with ChangeNotifier {
               description: values['description'],
               price: values['price'],
               imageUrl: values['imageUrl'],
-              isFavorite: values['isFavorite'],
+              isFavorite: favoriteData[id] ?? false,
             ),
           );
         });
@@ -53,7 +58,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future addProduct(productData) async {
-    const url = '${Config.base_url}/products.json';
+    final url = '${Config.base_url}/products.json?auth=$authToken';
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -62,7 +67,6 @@ class ProductsProvider with ChangeNotifier {
           'description': productData['description'],
           'price': productData['price'],
           'imageUrl': productData['imageUrl'],
-          'isFavorite': false,
         }),
       );
       final newProduct = Product(
@@ -83,7 +87,7 @@ class ProductsProvider with ChangeNotifier {
   Future updateProduct(String productid, productData) async {
     int index = _items.indexWhere((element) => element.id == productid);
     if (index >= 0) {
-      final url = '${Config.base_url}/products/$productid.json';
+      final url = '${Config.base_url}/products/$productid.json?auth=$authToken';
       try {
         await http.patch(
           Uri.parse(url),
@@ -111,7 +115,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> removeProduct(String productid) async {
-    final url = '${Config.base_url}/products/$productid.json';
+    final url = '${Config.base_url}/products/$productid.json?auth=$authToken';
     final index = _items.indexWhere((element) => element.id == productid);
     Product? deletedProduct = _items[index];
     _items.removeAt(index);
