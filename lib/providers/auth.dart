@@ -21,8 +21,9 @@ class Auth with ChangeNotifier {
     }
     return '';
   }
+
   String get userId {
-      return _userId as String;
+    return _userId as String;
   }
 
   Future _authenticate(String email, String password, String url) async {
@@ -58,5 +59,12 @@ class Auth with ChangeNotifier {
 
   Future<void> singin(String email, String password) async {
     return _authenticate(email, password, Config.singin_url);
+  }
+
+  void logOut() {
+    _token = '';
+    _userId = '';
+    _expirytime = null;
+    notifyListeners();
   }
 }
