@@ -25,14 +25,15 @@ class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
 
   String authToken;
+  String userId;
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
-  Orders(this.authToken, _orders);
+  Orders(this.authToken, this.userId, _orders);
   Future fetchAndSetOrders() async {
-    final url = '${Config.base_url}/orders.json?auth=$authToken';
+    final url = '${Config.base_url}/orders/$userId.json?auth=$authToken';
     try {
       final response = await http.get(Uri.parse(url));
       final extractedOrderItems = json.decode(response.body) ?? {};
@@ -65,7 +66,7 @@ class Orders with ChangeNotifier {
   }
 
   Future addOrder(List<CartItem> cartProducts, double total) async {
-    final url = '${Config.base_url}/orders.json?auth=$authToken';
+    final url = '${Config.base_url}/orders/$userId.json?auth=$authToken';
     try {
       final timestamp = DateTime.now();
       final response = await http.post(
@@ -79,6 +80,7 @@ class Orders with ChangeNotifier {
                     'title': cp.title,
                     'quantity': cp.qty,
                     'price': cp.price,
+                    'creatorId': userId,
                   })
               .toList(),
         }),

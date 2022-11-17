@@ -10,6 +10,7 @@ import '../secret/config.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [];
+  List<Product> _userItems = [];
   String authToken;
   String userId;
   var showFavoriteOnly = false;
@@ -17,6 +18,9 @@ class ProductsProvider with ChangeNotifier {
   ProductsProvider(this.authToken, this.userId, _items);
   List<Product> get items {
     return [..._items];
+  }
+  List<Product> get userItems {
+    return [..._userItems];
   }
 
   List<Product> get favorites {
@@ -57,6 +61,37 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
+  Future fetchAndSetUserProducts() async {
+    var url =
+        '${Config.base_url}/products.json?auth=$authToken&orderBy="creatorId"&equalTo="$userId"';
+    try {
+      final response = await http.get(Uri.parse(url));
+      final extractedProducts = json.decode(response.body) ?? {};
+      List<Product> loadedProducts = [];
+      if (extractedProducts.isNotEmpty) {
+        url = '${Config.base_url}/userFavorite/$userId.json?auth=$authToken';
+        final favoritesResponse = await http.get(Uri.parse(url));
+        final favoriteData = json.decode(favoritesResponse.body) ?? {};
+        extractedProducts.forEach((id, values) {
+          loadedProducts.add(
+            Product(
+              id: id,
+              title: values['title'],
+              description: values['description'],
+              price: values['price'],
+              imageUrl: values['imageUrl'],
+              isFavorite: favoriteData[id] ?? false,
+            ),
+          );
+        });
+      }
+      _userItems = loadedProducts;
+      notifyListeners();
+    } catch (error) {
+      throw error;
+    }
+  }
+
   Future addProduct(productData) async {
     final url = '${Config.base_url}/products.json?auth=$authToken';
     try {
@@ -67,6 +102,7 @@ class ProductsProvider with ChangeNotifier {
           'description': productData['description'],
           'price': productData['price'],
           'imageUrl': productData['imageUrl'],
+          'creatorId': userId,
         }),
       );
       final newProduct = Product(
