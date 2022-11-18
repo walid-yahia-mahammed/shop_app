@@ -20,29 +20,38 @@ class _OrderItemState extends State<OrderItem> {
   bool _expanded = false;
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10),
-      child: Column(children: [
-        ListTile(
-          title: Text('\$${widget.order.amount}'),
-          subtitle:
-              Text(DateFormat('d MMM y hh:mm').format(widget.order.dateTime)),
-          trailing: IconButton(
-            icon: _expanded ? Icon(Icons.expand_less) : Icon(Icons.expand_more),
-            onPressed: () {
-              setState(() {
-                _expanded = !_expanded;
-              });
-            },
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+      height:
+          _expanded ? min(widget.order.products.length * 20 + 110, 200) : 100,
+      child: Card(
+        margin: EdgeInsets.all(10),
+        child: Column(children: [
+          ListTile(
+            title: Text('\$${widget.order.amount}'),
+            subtitle:
+                Text(DateFormat('d MMM y hh:mm').format(widget.order.dateTime)),
+            trailing: IconButton(
+              icon:
+                  _expanded ? Icon(Icons.expand_less) : Icon(Icons.expand_more),
+              onPressed: () {
+                setState(() {
+                  _expanded = !_expanded;
+                });
+              },
+            ),
           ),
-        ),
-        if (_expanded)
-          Container(
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeIn,
             padding: EdgeInsets.symmetric(
               horizontal: 15,
               vertical: 4,
             ),
-            height: min(widget.order.products.length * 20 + 10, 100),
+            height: _expanded
+                ? min(widget.order.products.length * 20 + 10, 100)
+                : 0,
             child: ListView(
               children: widget.order.products
                   .map(
@@ -72,7 +81,8 @@ class _OrderItemState extends State<OrderItem> {
                   .toList(),
             ),
           )
-      ]),
+        ]),
+      ),
     );
   }
 }
