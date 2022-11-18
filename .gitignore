@@ -46,7 +46,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 linux/flutter/
-macos/Flutter
+macos/Flutter/
 windows/flutter/
 pubspec.lock
 config.dart

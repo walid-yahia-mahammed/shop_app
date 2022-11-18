@@ -131,11 +131,11 @@ class _AuthCardState extends State<AuthCard> {
     });
     try {
       if (_authMode == AuthMode.Login) {
-        await Provider.of<Auth>(context, listen: false)
-            .singin(_authData['email'] as String, _authData['password'] as String);
+        await Provider.of<Auth>(context, listen: false).singin(
+            _authData['email'] as String, _authData['password'] as String);
       } else {
-        await Provider.of<Auth>(context, listen: false)
-            .singup(_authData['email'] as String, _authData['password'] as String);
+        await Provider.of<Auth>(context, listen: false).singup(
+            _authData['email'] as String, _authData['password'] as String);
       }
     } on HttpException catch (error) {
       print(error.toString());
@@ -175,6 +175,7 @@ class _AuthCardState extends State<AuthCard> {
       }
       _showErrorDialog(errorMessage);
     } catch (error) {
+      print(error);
       var errorMessage = 'something went wrong!';
       _showErrorDialog(errorMessage);
     }
